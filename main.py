@@ -4,9 +4,7 @@ import datetime
 from tkinter import ttk, messagebox
 import tkinter as tk
 
-# ==========================================
-# 1. DATABASE & MODELS (SQLite)
-# ==========================================
+
 class Database:
     def __init__(self, db_file="library_app.db"):
         self.conn = sqlite3.connect(db_file)
@@ -74,7 +72,7 @@ class Database:
                 FOREIGN KEY(book_id) REFERENCES books(id)
             )
         ''')
-        # Transactions / Audit Log
+        
         self.cursor.execute('''
             CREATE TABLE IF NOT EXISTS transactions (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -86,7 +84,6 @@ class Database:
         self.conn.commit()
 
     def seed_admin(self):
-        # Default admin: username=admin, password=admin
         self.cursor.execute("SELECT * FROM users WHERE username = ?", ("admin",))
         if not self.cursor.fetchone():
             hashed = hashlib.sha256("admin".encode()).hexdigest()
@@ -96,7 +93,6 @@ class Database:
             )
             self.conn.commit()
 
-        # Default staff: username=staff, password=staff
         self.cursor.execute("SELECT * FROM users WHERE username = ?", ("staff",))
         if not self.cursor.fetchone():
             heashed = hashlib.sha256("staff".encode()).hexdigest()
@@ -114,10 +110,6 @@ class Database:
         )
         self.conn.commit()
 
-
-# ==========================================
-# 2. MAIN APPLICATION CLASS
-# ==========================================
 class LibraryApp(tk.Tk):
     def __init__(self):
         super().__init__()
@@ -126,24 +118,22 @@ class LibraryApp(tk.Tk):
         self.db = Database()
         self.current_user = None
 
-        # Base configuration
+
         self.configure(bg="#191952")
         self.style = ttk.Style(self)
-        
-        # Apply theme compatibility override
+
         if "clam" in self.style.theme_names():
             self.style.theme_use("clam")
 
         self.configure_styles()
-
-        # Container Frame
+        
         self.container = tk.Frame(self, bg="#D8CD38")
         self.container.pack(fill="both", expand=True)
 
         self.show_login_frame()
 
     def configure_styles(self):
-        # General widget colors
+       s
         self.style.configure("TFrame", background="#1e1e2e")
         self.style.configure("TLabel", background="#1e1e2e", foreground="#ffffff", font=("Helvetica", 10))
         self.style.configure("Header.TLabel", font=("Helvetica", 16, "bold"), foreground="#ffffff")
@@ -152,7 +142,7 @@ class LibraryApp(tk.Tk):
         self.style.configure("Nav.TButton", background="#181825", foreground="#ffffff", anchor="w", font=("Helvetica", 11))
         self.style.map("Nav.TButton", background=[("active", "#D8CD38")])
         
-        # High-contrast Treeview colors (Fixes invisible text on dark UI)
+       
         self.style.configure(
             "Treeview", 
             background="#474B18", 
@@ -175,9 +165,9 @@ class LibraryApp(tk.Tk):
     def clear_content(self):
         for widget in self.main_content.winfo_children():
             widget.destroy()
-        self.main_content.update_idletasks()  # Force layout re-calculation
+        self.main_content.update_idletasks() 
 
-    # --- AUTHENTICATION ---
+    
     def show_login_frame(self):
         self.clear_container()
         frame = ttk.Frame(self.container)
@@ -210,17 +200,17 @@ class LibraryApp(tk.Tk):
 
         ttk.Button(frame, text="Login", command=login).grid(row=3, column=0, columnspan=2, pady=15)
 
-    # --- DASHBOARD LAYOUT ---
+    
     def show_dashboard_frame(self):
         self.clear_container()
 
-        # Sidebar navigation
+        
         sidebar = tk.Frame(self.container, bg="#181825", width=220)
         sidebar.pack(side="left", fill="y")
 
         ttk.Label(sidebar, text="  Dashboard", style="Header.TLabel", background="#181825").pack(pady=20, fill="x")
 
-        # Workspace panel
+        
         self.main_content = ttk.Frame(self.container)
         self.main_content.pack(side="right", fill="both", expand=True, padx=15, pady=15)
 
@@ -243,11 +233,7 @@ class LibraryApp(tk.Tk):
         self.current_user = None
         self.show_login_frame()
 
-    # ==========================================
-    # 3. MODULE VIEWS
-    # ==========================================
-
-    # --- BOOK MANAGEMENT ---
+   
     def render_books_view(self):
         self.clear_content()
         ttk.Label(self.main_content, text="Book Inventory", style="Header.TLabel").pack(anchor="w", pady=5)
@@ -315,7 +301,7 @@ class LibraryApp(tk.Tk):
         ttk.Button(ctrl_frame, text="+ Add Book", command=open_add_book).pack(side="right", padx=5)
         search_books()
 
-    # --- CUSTOMERS MODULE ---
+    
     def render_customers_view(self):
         self.clear_content()
         ttk.Label(self.main_content, text="Customer Management", style="Header.TLabel").pack(anchor="w", pady=5)
@@ -360,7 +346,7 @@ class LibraryApp(tk.Tk):
         ttk.Button(ctrl_frame, text="+ Add Customer", command=open_add_cust).pack(side="right", padx=5)
         load_customers()
 
-    # --- BORROW / RETURN MODULE ---
+    
     def render_borrow_view(self):
         self.clear_content()
         ttk.Label(self.main_content, text="Borrow & Return Management", style="Header.TLabel").pack(anchor="w", pady=5)
@@ -408,7 +394,7 @@ class LibraryApp(tk.Tk):
 
         load_borrowed()
 
-    # --- SALES MODULE ---
+    
     def render_sales_view(self):
         self.clear_content()
         ttk.Label(self.main_content, text="Point of Sale (POS)", style="Header.TLabel").pack(anchor="w", pady=5)
@@ -462,7 +448,7 @@ class LibraryApp(tk.Tk):
 
         load_sales()
 
-    # --- USER MANAGEMENT ---
+
     def render_users_view(self):
         self.clear_content()
         ttk.Label(self.main_content, text="User Management (Super Admin)", style="Header.TLabel").pack(anchor="w", pady=5)
@@ -482,7 +468,7 @@ class LibraryApp(tk.Tk):
 
         load_users()
 
-    # --- AUDIT / TRANSACTIONS LOG ---
+    
     def render_transactions_view(self):
         self.clear_content()
         ttk.Label(self.main_content, text="System Audit Logs", style="Header.TLabel").pack(anchor="w", pady=5)
@@ -498,10 +484,6 @@ class LibraryApp(tk.Tk):
         for r in self.db.cursor.fetchall():
             tree.insert("", "end", values=r)
 
-
-# ==========================================
-# 4. ENTRY POINT
-# ==========================================
 if __name__ == "__main__":
     app = LibraryApp()
     app.mainloop()
