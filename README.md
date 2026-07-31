@@ -135,12 +135,10 @@ admin
 
 ## 👨‍💻 Author
 
-**Faizan Ahmad**
+**Haider Ali**
 
 BS Computer Science Graduate
 
 Full Stack Developer | Python Developer
 
----
-
-⭐ If you found this project useful, don't forget to star the repository.
+--
